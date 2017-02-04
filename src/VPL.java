@@ -108,12 +108,13 @@ public class VPL{
         // your code goes here------------------------------------------------------------------------------------------
 
         int a, b, c, n, L; //L = label
+        int numPast = 2;
+
         while( ip < k ) {  //k is the variable used to keep track
             int op = mem[ip];
             a = mem[ip + 1];
             b = mem[ip + 2];
             c = mem[ip + 3];
-            int numPast = 2;
             //n = mem[ip + 4];
             //L = mem[ip + 5];
             Scanner getInput = new Scanner(System.in);
@@ -162,14 +163,14 @@ public class VPL{
                     ip += 2;
                     break;
 
-                case 7: //Change ip to literal L  eg. 7 L
+                case 7: //Change ip to literal L  eg. 7 L (method call)
                     ip = mem[ip + 1];
                     if(debug) { System.out.println("case 7: Change ip to literal L  eg. 7 L"); }
                     break;
 
                 case 8:
                     if(mem[bp + 2 + mem[ip + 2]] != 0) { //a if the location of the inded on bp
-                    //if(mem[ip + 2] != 0){
+                    //if(mem[ip + 2] != 0){ //Mine
                         ip = mem[ip + 1];
                     }
                     else  ip += 3;
@@ -299,7 +300,9 @@ public class VPL{
 
                 case 27: // a - integer value from user input
                     System.out.print("? ");
-                    mem[ip + 2 + a] = getInput.nextInt();
+                    //mem[ip + 2 + a] = getInput.nextInt();
+                    mem[ip++] = getInput.nextInt();
+
                     ip += 2;
 
                     if(debug) { System.out.println("case 27"); }
