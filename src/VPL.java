@@ -120,6 +120,7 @@ public class VPL{
             Scanner getInput = new Scanner(System.in);
             switch (op) {
 
+
                 case 0: //Given. Do nothing
                     ip++;
                     break;
@@ -274,7 +275,7 @@ public class VPL{
                     break;
 
                 case 22: // a = n (n is a literal in cell b?)
-                    mem[ip + 2 + a] = mem[ip + 2];
+                    mem[bp + 2 + a] = mem[ip + 2];
                     ip += 3;
                     break;
 
@@ -301,9 +302,13 @@ public class VPL{
                 case 27: // a - integer value from user input
                     System.out.print("? ");
                     //mem[ip + 2 + a] = getInput.nextInt();
-                    mem[ip++] = getInput.nextInt();
+                    mem[bp + 2 + a] = getInput.nextInt();
+                    System.out.println(mem[bp + 2 + a]);
+                    //System.out.println(ip - 1);
+                    //System.out.println(ip - 2);
+                    //System.out.println(bp);
+                    ip+= 2;
 
-                    ip += 2;
 
                     if(debug) { System.out.println("case 27"); }
                     break;
