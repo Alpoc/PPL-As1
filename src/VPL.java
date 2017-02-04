@@ -257,10 +257,10 @@ public class VPL{
                     break;
 
                 case 20: // if (b == 0){  a = 1} else a = 0
-                    if (mem[ip + 2 + b] == 0) {
-                        mem[ip + 2 + a] = 1;
+                    if (mem[bp + 2 + b] == 0) {
+                        mem[bp + 2 + a] = 1;
                     }
-                    else { mem[ip + 2 + a] = 0;
+                    else { mem[bp + 2 + a] = 0;
                     }
                     ip += 3;
 
@@ -268,7 +268,7 @@ public class VPL{
                     break;
 
                 case 21: // a = b * -1  (opposite of b)
-                    mem[ip + 2 + a] = mem[ip + 2 + b] * -1;
+                    mem[bp + 2 + a] = mem[bp + 2 + b] * -1;
                     ip += 3;
 
                     if(debug) { System.out.println("case 21"); }
@@ -280,7 +280,7 @@ public class VPL{
                     break;
 
                 case 23: // a = b (copy b into a) (retain b?)
-                    mem[ip + 2 + a] = mem[ip + 2 + b];
+                    mem[bp + 2 + a] = mem[ip + 2 + b];
                     ip += 3;
                     if(debug) { System.out.println("case 23"); }
                     break;
@@ -303,10 +303,7 @@ public class VPL{
                     System.out.print("? ");
                     //mem[ip + 2 + a] = getInput.nextInt();
                     mem[bp + 2 + a] = getInput.nextInt();
-                    System.out.println(mem[bp + 2 + a]);
-                    //System.out.println(ip - 1);
-                    //System.out.println(ip - 2);
-                    //System.out.println(bp);
+                    //System.out.println(mem[bp + 2 + a]);
                     ip+= 2;
 
 
@@ -314,7 +311,7 @@ public class VPL{
                     break;
 
                 case 28: //Display value stored in cell a in the console
-                    System.out.print(mem[ip + 2 + a]);
+                    System.out.print(mem[bp + 2 + a]);
                     ip += 2;
 
                     if(debug) { System.out.println("case 28"); }
@@ -329,8 +326,8 @@ public class VPL{
                     break;
 
                 case 30: //If a == 32 -> 126 display ascii in console
-                    if (mem[ip + 2 + a] >= 32 && mem[ip + 2 + a] <= 126){
-                        System.out.print(Character.toString((char)mem[ip + 2 + a]));
+                    if (mem[bp + 2 + a] >= 32 && mem[bp + 2 + a] <= 126){
+                        System.out.print(Character.toString((char)mem[bp + 2 + a]));
                     }
                     ip += 2;
 
@@ -338,7 +335,8 @@ public class VPL{
                     break;
 
                 case 31: //Decrease hp by m and store hp value in a
-                    int m = mem[ip + 2];
+                    //moves heep space from max so the spaces in front are the heap space
+                    int m = mem[bp + 2];
                     hp -= m;
                     mem[bp + 2 + a] = hp;
                     ip += 3;
