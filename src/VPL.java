@@ -109,9 +109,11 @@ public class VPL{
 
         int a, b, c, n, L; //L = label
         int numPast = 2;
+        //int numPast = 0;
 
         while( ip < k ) {  //k is the variable used to keep track
             int op = mem[ip];
+            System.out.println(op);
             a = mem[ip + 1];
             b = mem[ip + 2];
             c = mem[ip + 3];
@@ -132,16 +134,41 @@ public class VPL{
 
                 case 2: //Jump to subroutine at label
                     mem[sp] = bp; //this moves the index of bp into the sp cell
-                    bp = sp; //
                     mem[sp +1] = ip + 2; //retuns ip + 2 without chaning ip
+                    bp = sp; //
                     sp += numPast; //numPast is two to skip first two cells
                     ip = mem[ip++];
                     numPast = 2;
                     break;
 
+                    /*
+                    else if(op == 2){
+               L = mem[ip+1];
+               mem[sp] = bp;
+               mem[sp + 1] = ip + 2;
+               bp = sp;
+               sp += 2 + numPassed;
+               ip = L;
+               numPassed = 0;
+           }
+
+           else if(op == 3){
+               a = mem[ip + 1];
+               mem[sp + numPassed + 2] = mem[bp + 2 + a];
+               numPassed++;
+               ip +=2;
+           }
+                     */
+
                 case 3:
-                    mem[bp + numPast] = mem[ip++];
+                    mem[sp + numPast] = mem[bp + 2 + mem[ip + 1]];
                     numPast++;
+                    ip +=2;
+                        //mem[bp + numPast] = mem[ip++];
+                    //mem[sp + numPast++] = mem[bp + 2 + a];
+                    //ip += 2;
+                        //numPast++;
+
                     break;
 
                 case 4: //Given. Increaes SP by n to make space for local variables in the current stack frame
