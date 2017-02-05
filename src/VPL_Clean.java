@@ -15,95 +15,123 @@ public class VPL_Clean{
 
     public static void main(String[] args) throws Exception
     {
-        BufferedReader keys = new BufferedReader(
-                new InputStreamReader( System.in));
-        System.out.print("enter name of file containing VPLstart program: ");  // C:\Users\DJ\IdeaProjects\VPL\src
+        BufferedReader keys = new BufferedReader(new InputStreamReader(System.in));
+        System.out.print("enter name of file containing VPLstart program: ");
         fileName = keys.readLine();
 
         // load the program into the front part of
         // memory
-        BufferedReader input = new BufferedReader( new FileReader( fileName ));
+        BufferedReader input = new BufferedReader(new FileReader(fileName));
         String line;
         StringTokenizer st;
-        int opcode;
+        int opcode = 0;
 
         ArrayList<IntPair> labels, holes;
         labels = new ArrayList<IntPair>();
         holes = new ArrayList<IntPair>();
-        int label;
+        int label = 0;
 
-        int k=0;
+        int k = 0;
         do {
             line = input.readLine();
             System.out.println("parsing line [" + line + "]");
-            if( line != null )
-            {// extract any tokens
-                st = new StringTokenizer( line );
-                if( st.countTokens() > 0 )
-                {// have a token, so must be an instruction (as opposed to empty line)
+            if (line != null) {// extract any tokens
+                st = new StringTokenizer(line);
+                if (st.countTokens() > 0) {// have a token, so must be an
+                    // instruction (as opposed to empty
+                    // line)
 
-                    opcode = Integer.parseInt(st.nextToken());
-
+                    try {
+                        opcode = Integer.parseInt(st.nextToken());
+                    } catch (Exception e) {
+                        System.err.println("There was an error: " + e);
+                        e.printStackTrace();
+                    }
                     // load the instruction into memory:
 
-                    if( opcode == labelCode )
-                    {// note index that comes where label would go
-                        label = Integer.parseInt(st.nextToken());
-                        labels.add( new IntPair( label, k ) );
-                    }
-                    else
-                    {// opcode actually gets stored
-                        mem[k] = opcode;  ++k;
+                    if (opcode == labelCode) {// note index that comes where
+                        // label would go
+                        try {
+                            label = Integer.parseInt(st.nextToken());
+                        } catch (Exception e) {
+                            System.err.println("There was an error: " + e);
+                            e.printStackTrace();
+                        }
+                        labels.add(new IntPair(label, k));
+                    } else {// opcode actually gets stored
+                        mem[k] = opcode;
+                        ++k;
 
-                        if( opcode == callCode || opcode == jumpCode ||
-                                opcode == condJumpCode )
-                        {// note the hole immediately after the opcode to be filled in later
-                            label = Integer.parseInt( st.nextToken() );
-                            mem[k] = label;  holes.add( new IntPair( k, label ) );
+                        if (opcode == callCode || opcode == jumpCode || opcode == condJumpCode) {// note
+                            // the
+                            // hole
+                            // immediately
+                            // after
+                            // the
+                            // opcode
+                            // to
+                            // be
+                            // filled
+                            // in
+                            // later
+                            try {
+                                label = Integer.parseInt(st.nextToken());
+                            } catch (Exception e) {
+                                System.err.println("There was an error: " + e);
+                                e.printStackTrace();
+                            }
+                            mem[k] = label;
+                            holes.add(new IntPair(k, label));
                             ++k;
                         }
 
-                        // load correct number of arguments (following label, if any):
-                        for( int j=0; j<numArgs(opcode); ++j )
-                        {
-                            mem[k] = Integer.parseInt(st.nextToken());
+                        // load correct number of arguments (following label, if
+                        // any):
+                        for (int j = 0; j < numArgs(opcode); ++j) {
+                            try {
+                                mem[k] = Integer.parseInt(st.nextToken());
+                            } catch (Exception e) {
+                                System.err.println("There was an error: " + e);
+                                e.printStackTrace();
+                            }
                             ++k;
                         }
 
-                    }// not a label
+                    } // not a label
 
-                }// have a token, so must be an instruction
-            }// have a line
-        }while( line != null );
+                } // have a token, so must be an instruction
+            } // have a line
+        } while (line != null);
 
-        //System.out.println("after first scan:");
-        //showMem( 0, k-1 );
+        // System.out.println("after first scan:");
+        // showMem( 0, k-1 );
 
         // fill in all the holes:
         int index;
-        for( int m=0; m<holes.size(); ++m )
-        {
+        for (int m = 0; m < holes.size(); ++m) {
             label = holes.get(m).second;
             index = -1;
-            for( int n=0; n<labels.size(); ++n )
-                if( labels.get(n).first == label )
+            for (int n = 0; n < labels.size(); ++n)
+                if (labels.get(n).first == label)
                     index = labels.get(n).second;
-            mem[ holes.get(m).first ] = index;
+            mem[holes.get(m).first] = index;
         }
 
         System.out.println("after replacing labels:");
-        showMem( 0, k-1 );
+        showMem(0, k - 1);
 
         // initialize registers:
-        bp = k;  sp = k+2;  ip = 0;  rv = -1;  hp = max;
+        bp = k;
+        sp = k + 2;
+        ip = 0;
+        rv = -1;
+        hp = max;
         numPassed = 0;
 
-        //CHANGED THIS TO RUN DANS CODE
-        //int codeEnd = bp-1;
-        codeEnd = bp-1;
+        codeEnd = bp - 1;
 
-        System.out.println("Code is " );
-        showMem( 0, codeEnd );
+        System.out.println("Code is ");
+        showMem(0, codeEnd);
 
         gp = codeEnd + 1;
 
@@ -240,7 +268,7 @@ public class VPL_Clean{
 
                 case 18: // a = (b && c)
                     //TODO is b && > 0???
-                    if (mem[bp + 2 + b] > 0 && mem[bp + 2 + c] > 0){
+                    if (mem[bp + 2 + b] != 0 && mem[bp + 2 + c] != 0){
                         mem[bp + 2 + a] = 1;
                     }
                     else{ mem[bp + 2 + a] = 0; }
@@ -249,7 +277,7 @@ public class VPL_Clean{
 
                 case 19: // a = (b || c)
                     //TODO is b || c > 0?
-                    if (mem[bp + 2 + b] > 0 || mem[bp + 2 + c] > 0){
+                    if (mem[bp + 2 + b] != 0 || mem[bp + 2 + c] != 0){
                         mem[bp + 2 + a] = 1;
                     }
                     else{ mem[bp + 2 + a] = 0; }
@@ -271,24 +299,24 @@ public class VPL_Clean{
                     break;
 
                 case 22: // a = n (n is a literal in cell b?)
-                    mem[bp + 2 + a] = mem[ip + 2];
+                    mem[bp + 2 + a] = b;
                     ip += 3;
                     break;
 
                 case 23: // a = b (copy b into a) (retain b?)
-                    mem[bp + 2 + a] = mem[ip + 2 + b];
+                    mem[bp + 2 + a] = mem[bp + 2 + b];
                     ip += 3;
                     break;
 
                 case 24: //Heap stuff
                     //TODO
-                    mem[a] = mem[hp + (mem[c] + mem[b])];
+                    mem[bp + 2 + a] = mem[hp + (mem[bp + 2 + c] + mem[bp + 2 + b])];
                     //mem[a] = mem[(mem[c] + mem[b])];
                     ip += 4;
                     break;
 
-                case 25: //
-                    mem[hp + (mem[a] + mem[b])] = mem[c];
+                case 25: //Heap stuff
+                    mem[hp + (mem[bp + 2 + a] + mem[bp + 2 + b])] = mem[bp + 2 + c];
                     //mem[(mem[a] + mem[b])] = mem[c];
                     ip += 4;
                     break;
@@ -330,6 +358,7 @@ public class VPL_Clean{
 
                 case 32:
                     gp += mem[ip + 1];
+                    bp += mem[ip + 1]; // Added this to make similar to daniel code when he was helping me
                     sp += mem[ip + 1];
                     ip += 2;
                     break;
