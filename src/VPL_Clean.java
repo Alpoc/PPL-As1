@@ -5,11 +5,11 @@
 import java.io.*;
 import java.util.*;
 
-public class VPL{
-    static boolean debug = true;
+public class VPL_Clean{
+    static int debug = 2; //1 or 2
     static final int max = 10000;
     static int[] mem = new int[max];
-    static int ip, bp, sp, rv, hp, numPassed, gp;
+    static int ip, bp, sp, rv, hp, numPassed, gp, codeEnd;
 
     static String fileName;
 
@@ -98,7 +98,9 @@ public class VPL{
         bp = k;  sp = k+2;  ip = 0;  rv = -1;  hp = max;
         numPassed = 0;
 
-        int codeEnd = bp-1;
+        //CHANGED THIS TO RUN DANS CODE
+        //int codeEnd = bp-1;
+        codeEnd = bp-1;
 
         System.out.println("Code is " );
         showMem( 0, codeEnd );
@@ -111,9 +113,12 @@ public class VPL{
         int numPast = 2;
         //int numPast = 0;
 
+
         while( ip < k ) {  //k is the variable used to keep track
             int op = mem[ip];
-            //System.out.println(op);
+            if (debug == 1){
+                System.out.println(op);
+            }
             a = mem[ip + 1];
             b = mem[ip + 2];
             c = mem[ip + 3];
@@ -134,50 +139,23 @@ public class VPL{
 
                 case 2: //Jump to subroutine at label
                     mem[sp] = bp; //this moves the index of bp into the sp cell
-                    mem[sp + 1] = ip + 2; //retuns ip + 2 without changing ip
+                    mem[sp + 1] = ip + 2;
                     bp = sp; //
                     sp += numPast; //numPast is two to skip first two cells
                     ip = mem[ip + 1];
-                    ip++;
+                    //ip++;
                     numPast = 2;
                     break;
-
-                    /*
-                    else if(op == 2){
-               L = mem[ip+1];
-               mem[sp] = bp;
-               mem[sp + 1] = ip + 2;
-               bp = sp;
-               sp += 2 + numPassed;
-               ip = L;
-               numPassed = 0;
-           }
-
-           else if(op == 3){
-               a = mem[ip + 1];
-               mem[sp + numPassed + 2] = mem[bp + 2 + a];
-               numPassed++;
-               ip +=2;
-           }
-                     */
 
                 case 3:
                     mem[sp + numPast] = mem[bp + 2 + mem[ip + 1]];
                     numPast++;
                     ip +=2;
-                        //mem[bp + numPast] = mem[ip++];
-                    //mem[sp + numPast++] = mem[bp + 2 + a];
-                    //ip += 2;
-                        //numPast++;
-
                     break;
 
                 case 4: //Given. Increaes SP by n to make space for local variables in the current stack frame
-                    //n = mem[ip + 1];
                     sp += mem[ip + 1]; //increments by 1 then uses it
                     ip += 2; //since ip is incremented in live above this works as ip += 2;
-
-                    if(debug) { System.out.println("case 4: create space for local veriables"); }
                     break;
 
                 case 5: //Return from subroutine, store a in rv
@@ -194,12 +172,10 @@ public class VPL{
 
                 case 7: //Change ip to literal L  eg. 7 L (method call)
                     ip = mem[ip + 1];
-                    if(debug) { System.out.println("case 7: Change ip to literal L  eg. 7 L"); }
                     break;
 
                 case 8:
                     if(mem[bp + 2 + mem[ip + 2]] != 0) { //a if the location of the inded on bp
-                    //if(mem[ip + 2] != 0){ //Mine
                         ip = mem[ip + 1];
                     }
                     else  ip += 3;
@@ -208,36 +184,26 @@ public class VPL{
                 case 9: // a = b + c
                     mem[bp + 2 + a] = mem[bp + 2 + b] + mem[bp + 2 + c];  // |ip (9)| |_| |_| |a| |b| |c|
                     ip += 4;
-
-                    if(debug) { System.out.println("case 9: b + c = a = " + mem[bp + 2 + a]); }
                     break;
 
                 case 10: // a = b - c
                     mem[bp + 2 + a] = mem[bp + 2 + b] - mem[bp + 2 + c];  // |ip (9)| |_| |_| |a| |b| |c|
                     ip += 4;
-
-                    if(debug) { System.out.println("case 10: b - c = a = " + mem[bp + 2 + a]); }
                     break;
 
                 case 11: // a = b * c
                     mem[bp + 2 + a] = mem[bp + 2 + b] * mem[bp + 2 + c];  // |ip (9)| |_| |_| |a| |b| |c|
                     ip += 4;
-
-                    if(debug) { System.out.println("case 11: b * c = a = " + mem[bp + 2 + a]); }
                     break;
 
                 case 12: // a = b / c
                     mem[bp + 2 + a] = mem[bp + 2 + b] / mem[bp + 2 + c];  // |ip (9)| |_| |_| |a| |b| |c|
                     ip += 4;
-
-                    if(debug) { System.out.println("case 12: b / c = a = " + mem[bp + 2 + a]); }
                     break;
 
                 case 13: // a = b % c
                     mem[bp + 2 + a] = mem[bp + 2 + b] % mem[bp + 2 + c];  // |ip (9)| |_| |_| |a| |b| |c|
                     ip += 4;
-
-                    if(debug) { System.out.println("case 13: b % c = a = " + mem[bp + 2 + a]); }
                     break;
 
                 case 14: // a = (b == c)
@@ -297,36 +263,33 @@ public class VPL{
                     else { mem[bp + 2 + a] = 0;
                     }
                     ip += 3;
-
-                    if(debug) { System.out.println("case 20"); }
                     break;
 
                 case 21: // a = b * -1  (opposite of b)
                     mem[bp + 2 + a] = mem[bp + 2 + b] * -1;
                     ip += 3;
-
-                    if(debug) { System.out.println("case 21"); }
                     break;
 
                 case 22: // a = n (n is a literal in cell b?)
                     mem[bp + 2 + a] = mem[ip + 2];
                     ip += 3;
-
                     break;
 
                 case 23: // a = b (copy b into a) (retain b?)
                     mem[bp + 2 + a] = mem[ip + 2 + b];
                     ip += 3;
-                    if(debug) { System.out.println("case 23"); }
                     break;
 
-                case 24: //
-                    mem[a] = mem[c] + mem[b];
+                case 24: //Heap stuff
+                    //TODO
+                    mem[a] = mem[hp + (mem[c] + mem[b])];
+                    //mem[a] = mem[(mem[c] + mem[b])];
                     ip += 4;
                     break;
 
                 case 25: //
-                    mem[mem[a] + mem[b]] = mem[c];
+                    mem[hp + (mem[a] + mem[b])] = mem[c];
+                    //mem[(mem[a] + mem[b])] = mem[c];
                     ip += 4;
                     break;
 
@@ -336,28 +299,18 @@ public class VPL{
 
                 case 27: // a - integer value from user input
                     System.out.print("? ");
-                    //mem[ip + 2 + a] = getInput.nextInt();
                     mem[bp + 2 + a] = getInput.nextInt();
-                    //System.out.println(mem[bp + 2 + a]);
                     ip+= 2;
-
-
-                    if(debug) { System.out.println("case 27"); }
                     break;
 
                 case 28: //Display value stored in cell a in the console
                     System.out.print(mem[bp + 2 + a]);
                     ip += 2;
-
-                    //if(debug) { System.out.println("case 28"); }
                     break;
 
                 case 29: //Move cursor to the beginning of the next line
-                    //TODO
                     System.out.println();
                     ip++;
-
-                    //if(debug) { System.out.println("case 29 "); }
                     break;
 
                 case 30: //If a == 32 -> 126 display ascii in console
@@ -365,18 +318,14 @@ public class VPL{
                         System.out.print(Character.toString((char)mem[bp + 2 + a]));
                     }
                     ip += 2;
-
-                    if(debug) { System.out.println("case 30"); }
                     break;
 
                 case 31: //Decrease hp by m and store hp value in a
                     //moves heep space from max so the spaces in front are the heap space
-                    int m = mem[bp + 2];
+                    int m = mem[bp + 2 + b];
+                    mem[bp + 2 + a] = (max - hp);
                     hp -= m;
-                    mem[bp + 2 + a] = hp;
                     ip += 3;
-
-                    if(debug) { System.out.println("case 31"); }
                     break;
 
                 case 32:
@@ -395,8 +344,14 @@ public class VPL{
                     ip += 3;
                     break;
 
+
+
             } //End switch statement
+            if (debug == 2) {
+                printMem();
+            }
         }
+
 
 /*        while(  true  ){ //you have to figure out when to end the while
 
@@ -538,5 +493,22 @@ public class VPL{
             System.out.println( k + ": " + mem[k] );
         }
     }// showMem
+
+    private static void printMem() {
+        System.out.println();
+        System.out.print("Current ip: " + ip + " rv: " + rv + "[");
+        for (int i = 0; i <= codeEnd; i++) {
+            System.out.print(mem[i] + ", ");
+        }
+        System.out.print("||");
+        for (int i = codeEnd + 1; i < sp; i++) {
+            System.out.print(mem[i] + ", ");
+        }
+        System.out.print("||");
+        for (int i = hp; i < max; i++) {
+            System.out.print(mem[i] + ", ");
+        }
+        System.out.println("]");
+    }
 
 }// VPLstart
