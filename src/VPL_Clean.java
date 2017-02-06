@@ -334,7 +334,7 @@ public class VPL_Clean{
 
                 case 30: //If a == 32 -> 126 display ascii in console
                     if (mem[bp + 2 + a] >= 32 && mem[bp + 2 + a] <= 126){
-                        System.out.print(Character.toString((char)mem[bp + 2 + a]));
+                        System.out.print((char)mem[bp + 2 + a]);
                     }
                     ip += 2;
                     break;
