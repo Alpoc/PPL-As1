@@ -167,7 +167,6 @@ public class VPL_Clean{
                     bp = sp; //
                     sp += numPast; //numPast is two to skip first two cells
                     ip = mem[ip + 1];
-                    //ip++;
                     numPast = 2;
                     break;
 
@@ -271,7 +270,6 @@ public class VPL_Clean{
                     break;
 
                 case 19: // a = (b || c)
-                    //TODO is b || c > 0?
                     if (mem[bp + 2 + b] != 0 || mem[bp + 2 + c] != 0){
                         mem[bp + 2 + a] = 1;
                     }
@@ -369,8 +367,7 @@ public class VPL_Clean{
                     System.exit(1);
 
             } //End switch statement
-            if (debug == 2) {
-            }
+
         }
 
         //--------------------------------------------------------------------------------------------------------------
