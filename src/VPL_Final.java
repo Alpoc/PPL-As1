@@ -5,8 +5,8 @@
 import java.io.*;
 import java.util.*;
 
-public class VPL_Clean{
-    static int debug = 0; //1 for op print
+public class VPL_Final{
+    static int debug = 0; //1 for op or 2 code||stack||heap
     static final int max = 10000;
     static int[] mem = new int[max];
     static int ip, bp, sp, rv, hp, numPassed, gp, codeEnd;
@@ -139,6 +139,8 @@ public class VPL_Clean{
 
         int a, b, c, n, L; //L = label
         int numPast = 2;
+        //int numPast = 0;
+
 
         while( ip < k ) {  //k is the variable used to keep track
             int op = mem[ip];
@@ -148,6 +150,8 @@ public class VPL_Clean{
             a = mem[ip + 1];
             b = mem[ip + 2];
             c = mem[ip + 3];
+            //n = mem[ip + 4];
+            //L = mem[ip + 5];
             Scanner getInput = new Scanner(System.in);
             switch (op) {
 
@@ -343,6 +347,9 @@ public class VPL_Clean{
 
                 case 31: //Decrease hp by m and store hp value in a
                     //moves heep space from max so the spaces in front are the heap space
+                    //mem[bp + 2 + a] = (max - hp - 1);
+                    //hp -= mem[bp + 2 + b];
+                    //ip += 3;
                     hp -= mem[bp + 2 + b];
                     mem[bp + 2 + a] = hp;
                     ip += 3;
@@ -356,11 +363,15 @@ public class VPL_Clean{
                     break;
 
                 case 33:  //spec calls for gp + n, in class we did eg 33 3 7 = mem[bp + 2 + 7]
+                    // playing around to fix
+                    // mem[gp + 2 + mem[ip + 2 + 1]] = mem[ip + 2 + mem[ip + 2 + 2]];
                     mem[gp + a] = mem[bp + 2 + b];
                     ip += 3;
                     break;
 
                 case 34:  //copy global memory cell index gp+n into cell a (opposite of case 33)
+                    // trying to fix stuff
+                    // mem[ip + 2 + mem[ip + 2 + 2]] = mem[gp + 2 + mem[ip + 2 + 1]];
                     mem[bp + 2 + a] = mem[gp + b];
                     ip += 3;
                     break;
@@ -368,11 +379,35 @@ public class VPL_Clean{
                     System.out.println("Incorrect Op code" + a);
                     System.exit(1);
 
+
+
             } //End switch statement
             if (debug == 2) {
+                printMem();
             }
         }
 
+
+/*        while(  true  ){ //you have to figure out when to end the while
+
+            int op = mem[ ip ];
+
+            if( op==0 ){
+                ip++;
+            }
+            //...
+            else if( op== 4){
+                //
+                n = mem[ ip+1 ];
+                sp += n;
+                ip += 2; //ip needs to hop two cells
+            }
+            //....
+
+            //(side note)  mem[ bp + 2 + a ] == access local variable 'a'
+
+        }// end of the fetch-execute loop (while)
+*/
         //--------------------------------------------------------------------------------------------------------------
 
     }// main
@@ -493,5 +528,22 @@ public class VPL_Clean{
             System.out.println( k + ": " + mem[k] );
         }
     }// showMem
+
+    private static void printMem() {
+        System.out.println();
+        System.out.print("Current ip: " + ip + " rv: " + rv + "[");
+        for (int i = 0; i <= codeEnd; i++) {
+            System.out.print(mem[i] + ", ");
+        }
+        System.out.print("||");
+        for (int i = codeEnd + 1; i < sp; i++) {
+            System.out.print(mem[i] + ", ");
+        }
+        System.out.print("||");
+        for (int i = hp; i < max; i++) {
+            System.out.print(mem[i] + ", ");
+        }
+        System.out.println("]");
+    }
 
 }// VPLstart

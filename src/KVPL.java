@@ -74,7 +74,7 @@ public class KVPL
     {
         BufferedReader keys = new BufferedReader(
                 new InputStreamReader( System.in));
-        System.out.print("enter name of file containing VPL program: ");
+        System.out.print("enter name of file containing VPLOld program: ");
         fileName = keys.readLine();
 
         // load the program into the front part of
@@ -460,4 +460,4 @@ public class KVPL
         System.out.print(" ]MAX\n");
     }
 
-}// VPL
+}// VPLOld
